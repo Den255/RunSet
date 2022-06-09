@@ -1,6 +1,7 @@
 package org.openjfx;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -19,7 +20,9 @@ import java.nio.file.Path;
 import java.util.Base64;
 
 public class ClientApi {
-    public static String getRequest(String request_url) throws Exception {
+    public static int port;
+    public static String token;
+    public ClientApi() {
         String clientPath = "/home/den/snap/leagueoflegends/common/.wine/drive_c/Riot Games/League of Legends/";
         File lockfile = new File(new File(clientPath), "lockfile");
         if (lockfile.exists()) {
@@ -36,11 +39,42 @@ public class ClientApi {
         String password = split[3];
         String token = new String(Base64.getEncoder().encode(("riot:" + password).getBytes()));
         int port = Integer.parseInt(split[2]);
+        ClientApi.port = port;
+        ClientApi.token = token;
         System.out.println("Token: " + token);
         System.out.println("Port: " + port);
-        System.out.println("Executing test request");
-
+    }
+    public static String getRequest(String request_url) throws Exception {
+        System.out.println("Executing get request");
         HttpGet method = new HttpGet();
+        try {
+            method.setURI(new URI("https://127.0.0.1:" + port + request_url));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        method.addHeader("Authorization", "Basic " + token);
+        method.addHeader("Accept", "*/*");
+
+        CloseableHttpClient client = createHttpClient();
+        String t = null;
+        try (CloseableHttpResponse response = client.execute(method)) {
+            boolean b = response.getStatusLine().getStatusCode() == 200;
+            if (!b) {
+                System.out.println("Status code: " + response.getStatusLine().getStatusCode());
+            }
+            else {
+                t = dumpStream(response.getEntity().getContent());
+                EntityUtils.consume(response.getEntity());
+                System.out.println("Response: " + t);
+            }
+        }catch (ConnectException e){
+            //throw new RuntimeException(e);
+            System.out.println("Client not started");
+        }
+        return t;
+    }
+    public static String delRequest(String request_url) throws Exception {
+        HttpDelete method = new HttpDelete();
         try {
             method.setURI(new URI("https://127.0.0.1:" + port + request_url));
         } catch (URISyntaxException e) {
