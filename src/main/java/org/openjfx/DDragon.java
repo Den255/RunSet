@@ -66,7 +66,7 @@ public class DDragon {
         }
     }
     public boolean syncDDragonData() throws IOException {
-        URL url = new URL("http://ddragon.leagueoflegends.com/cdn/12.11.1/data/en_US/champion.json");
+        URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+version+"/data/en_US/champion.json");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         int status = con.getResponseCode();
