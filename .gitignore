@@ -2,3 +2,5 @@
 .vscode/*
 target/
 out/*
+champions.json
+ddragon-version

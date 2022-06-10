@@ -23,17 +23,12 @@ public class ClientApi {
     public static int port;
     public static String token;
     public ClientApi() {
-        String clientPath = "/home/den/snap/leagueoflegends/common/.wine/drive_c/Riot Games/League of Legends/";
-        File lockfile = new File(new File(clientPath), "lockfile");
-        if (lockfile.exists()) {
-            System.out.println("have file!");
-        }
         Path filePath = Path.of("/home/den/snap/leagueoflegends/common/.wine/drive_c/Riot Games/League of Legends/lockfile");
-        String content;
+        String content = "";
         try {
             content = Files.readString(filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Lockfile not found or client not started!");
         }
         String[] split = content.split(":");
         String password = split[3];
