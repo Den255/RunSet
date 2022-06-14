@@ -16,10 +16,12 @@ public class App extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         
-        stage.setTitle("JavaFX and Maven");
+        stage.setTitle("RunSet");
         stage.setScene(scene);
         stage.show();
 
+        DDragon dDragon = new DDragon();
+        dDragon.checkVersion();
     }
 
     public static void main(String[] args) {
