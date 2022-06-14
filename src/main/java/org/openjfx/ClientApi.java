@@ -9,7 +9,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.HostnameVerifier;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
@@ -63,7 +62,6 @@ public class ClientApi {
                 System.out.println("Response: " + t);
             }
         }catch (ConnectException e){
-            //throw new RuntimeException(e);
             System.out.println("Client not started");
         }
         return t;
