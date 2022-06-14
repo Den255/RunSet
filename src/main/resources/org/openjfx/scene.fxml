@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <Pane id="AnchorPane" prefHeight="421.0" prefWidth="375.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.MainController">
-   <TextField fx:id="search" onMouseClicked="#handleSearchAction" prefHeight="32.0" prefWidth="374.0" />
+   <TextField fx:id="search" onAction="#handleSearchAction" prefHeight="32.0" prefWidth="374.0" />
    <ListView fx:id="localRunesList" layoutY="35.0" prefHeight="352.0" prefWidth="375.0" />
    <Button layoutY="388.0" onAction="#handleButtonAction" prefHeight="32.0" prefWidth="375.0" text="Refresh" />
 </Pane>
