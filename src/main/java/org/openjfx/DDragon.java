@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.stream.Collectors;
 
 public class DDragon {
@@ -33,21 +32,6 @@ public class DDragon {
             System.out.println("DDragon data version: "+version);
         }
     }
-    public ArrayList<String> getData() throws IOException {
-
-        this.checkVersion();
-
-        String champions = Files.readString(Path.of("./champions.json"));
-        JsonParser parser = new JsonParser();
-        Object obj = parser.parse(champions);
-        JsonObject jsonObj = (JsonObject)obj;
-        JsonElement jsonData = jsonObj.get("data");
-        JsonObject championsData = jsonData.getAsJsonObject();
-        Set<String> chNames = championsData.keySet();
-
-        chNames.iterator();
-        return new ArrayList<>(chNames);
-    }
     public void checkVersion() throws IOException {
         FileOutputStream ddVersion = new FileOutputStream("./ddragon-version", true);
         ddVersion.flush();
@@ -57,7 +41,9 @@ public class DDragon {
         System.out.println("Local ddragon version: "+local_version);
         if(!local_version.equals(version)){
             System.out.println("Update local version!");
-            if(this.syncDDragonData()){
+            URL runes = new URL("https://static.u.gg/assets/lol/riot_static/"+version+"/data/en_US/runesReforged.json");
+            URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+version+"/data/en_US/champion.json");
+            if(this.syncDDragonData(url, "./champions.json") && this.syncDDragonData(runes,"./runesReforged.json")){
                 PrintWriter writer = new PrintWriter("./ddragon-version");
                 writer.write(version);
                 writer.flush();
@@ -65,8 +51,7 @@ public class DDragon {
             }
         }
     }
-    public boolean syncDDragonData() throws IOException {
-        URL url = new URL("http://ddragon.leagueoflegends.com/cdn/"+version+"/data/en_US/champion.json");
+    public boolean syncDDragonData(URL url, String out) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         int status = con.getResponseCode();
@@ -77,7 +62,7 @@ public class DDragon {
 
         con.disconnect();
 
-        PrintWriter writer = new PrintWriter("./champions.json");
+        PrintWriter writer = new PrintWriter(out);
         writer.write(champions);
         writer.flush();
         writer.close();
