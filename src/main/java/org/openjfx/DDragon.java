@@ -51,21 +51,26 @@ public class DDragon {
             }
         }
     }
-    public boolean syncDDragonData(URL url, String out) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        int status = con.getResponseCode();
-        System.out.println(status);
+    public boolean syncDDragonData(URL url, String out) {
+        int status = 0;
+        try {
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            status = con.getResponseCode();
+            System.out.println(status);
+            InputStreamReader streamReader = new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8);
+            String champions = new BufferedReader(streamReader).lines().collect(Collectors.joining());
+            con.disconnect();
 
-        InputStreamReader streamReader = new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8);
-        String champions = new BufferedReader(streamReader).lines().collect(Collectors.joining());
+            PrintWriter writer = new PrintWriter(out);
+            writer.write(champions);
+            writer.flush();
+            writer.close();
 
-        con.disconnect();
-
-        PrintWriter writer = new PrintWriter(out);
-        writer.write(champions);
-        writer.flush();
-        writer.close();
+        } catch (IOException e) {
+            System.out.println("No connection!");
+            return status == 500;
+        }
         return status == 200;
     }
 }

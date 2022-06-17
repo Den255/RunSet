@@ -15,7 +15,6 @@ public class Perks {
         Object obj = parser.parse(champions);
         JsonArray arr = (JsonArray)obj;
         for (JsonElement item : arr){
-            String itemId = item.getAsJsonObject().get("id").getAsString();
             JsonArray runesArr = item.getAsJsonObject().get("slots").getAsJsonArray();
             for(JsonElement slot : runesArr){
                 for (JsonElement rune : slot.getAsJsonObject().get("runes").getAsJsonArray()){

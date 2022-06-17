@@ -1,9 +1,12 @@
 package org.openjfx;
 
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -21,7 +24,7 @@ import java.util.Base64;
 public class ClientApi {
     public static int port;
     public static String token;
-    public ClientApi() {
+    public void init() {
         Path filePath = Path.of("/home/den/snap/leagueoflegends/common/.wine/drive_c/Riot Games/League of Legends/lockfile");
         String content = "";
         try {
@@ -38,8 +41,7 @@ public class ClientApi {
         System.out.println("Token: " + token);
         System.out.println("Port: " + port);
     }
-    public static String getRequest(String request_url) throws Exception {
-        System.out.println("Executing get request");
+    public static String getRequest(String request_url) {
         HttpGet method = new HttpGet();
         try {
             method.setURI(new URI("https://127.0.0.1:" + port + request_url));
@@ -49,9 +51,8 @@ public class ClientApi {
         method.addHeader("Authorization", "Basic " + token);
         method.addHeader("Accept", "*/*");
 
-        CloseableHttpClient client = createHttpClient();
         String t = null;
-        try (CloseableHttpResponse response = client.execute(method)) {
+        try (CloseableHttpResponse response = createHttpClient().execute(method)) {
             boolean b = response.getStatusLine().getStatusCode() == 200;
             if (!b) {
                 System.out.println("Status code: " + response.getStatusLine().getStatusCode());
@@ -59,14 +60,49 @@ public class ClientApi {
             else {
                 t = dumpStream(response.getEntity().getContent());
                 EntityUtils.consume(response.getEntity());
+            }
+        }catch (ConnectException e){
+            System.out.println("Client not started");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return t;
+    }
+    public static void postRequest(String requestUrl, String jsonStr) {
+        System.out.println("Executing get request");
+        HttpPost method = new HttpPost();
+        try {
+            method.setURI(new URI("https://127.0.0.1:" + port + requestUrl));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        method.addHeader("Authorization", "Basic " + token);
+        method.addHeader("Accept", "*/*");
+
+        method.setEntity(
+                EntityBuilder.create()
+                        .setText(jsonStr)
+                        .setContentType(ContentType.APPLICATION_JSON)
+                        .build()
+        );
+
+        try (CloseableHttpResponse response = createHttpClient().execute(method)) {
+            boolean b = response.getStatusLine().getStatusCode() == 200;
+            if (!b) {
+                System.out.println("Status code: " + response.getStatusLine().getStatusCode());
+            }
+            else {
+                String t = dumpStream(response.getEntity().getContent());
+                EntityUtils.consume(response.getEntity());
                 System.out.println("Response: " + t);
             }
         }catch (ConnectException e){
             System.out.println("Client not started");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return t;
     }
-    public static String delRequest(String request_url) throws Exception {
+    public static void delRequest(String request_url) {
         HttpDelete method = new HttpDelete();
         try {
             method.setURI(new URI("https://127.0.0.1:" + port + request_url));
@@ -76,23 +112,21 @@ public class ClientApi {
         method.addHeader("Authorization", "Basic " + token);
         method.addHeader("Accept", "*/*");
 
-        CloseableHttpClient client = createHttpClient();
-        String t = null;
-        try (CloseableHttpResponse response = client.execute(method)) {
+        try (CloseableHttpResponse response = createHttpClient().execute(method)) {
             boolean b = response.getStatusLine().getStatusCode() == 200;
             if (!b) {
                 System.out.println("Status code: " + response.getStatusLine().getStatusCode());
             }
             else {
-                t = dumpStream(response.getEntity().getContent());
+                String t = dumpStream(response.getEntity().getContent());
                 EntityUtils.consume(response.getEntity());
                 System.out.println("Response: " + t);
             }
         }catch (ConnectException e){
-            //throw new RuntimeException(e);
             System.out.println("Client not started");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return t;
     }
     private static String dumpStream(InputStream in) {
         java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");

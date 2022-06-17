@@ -6,15 +6,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("scene.fxml")));
         
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
         
         stage.setTitle("RunSet");
         stage.setScene(scene);
@@ -22,6 +24,7 @@ public class App extends Application {
 
         DDragon dDragon = new DDragon();
         dDragon.checkVersion();
+        new ClientApi().init();
     }
 
     public static void main(String[] args) {
