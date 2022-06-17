@@ -20,15 +20,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 public class MainController {
 
     public ArrayList<String> championNames;
     @FXML
-    public ListView<LRunesCell> localRunesList;
+    public ListView<RunesCell> localRunesList;
     @FXML
     public TextField search;
     public VBox dialogVbox;
@@ -53,9 +51,10 @@ public class MainController {
             String page_id = rune.get("id").getAsString();
             JsonArray perks = rune.get("selectedPerkIds").getAsJsonArray();
             URL imgLocation = getClass().getResource("runes/"+perks.get(0)+".png");
-            Image image = new Image(String.valueOf(imgLocation));
+            List<Image> images = new ArrayList<>();
+            images.add(new Image(String.valueOf(imgLocation)));
             if (rune.get("isDeletable").getAsBoolean())
-                localRunesList.getItems().add(new LRunesCell(image, name, page_id));
+                localRunesList.getItems().add(new RunesCell(images, name, page_id));
         }
 
     }
@@ -74,7 +73,7 @@ public class MainController {
 
         for (String position : runes) {
             String positionStr = this.getPosition(position);
-            List<Entry<String, Integer>> main = this.getPerks(worldRunes.get(position));
+            List<Entry<String, Integer>> main = Perks.getPerks(worldRunes.get(position));
             System.out.println(main);
             List<Image> images = new ArrayList<>();
             Perks perks = new Perks();
@@ -91,58 +90,6 @@ public class MainController {
     public String getPosition(String positionId){
         String[] positions = {"JUNGLE","SUPPORT","ADC","TOP","MID","NONE"};
         return positions[Integer.parseInt(positionId)-1];
-    }
-    public List<Entry<String, Integer>> getPerks(JsonElement page) {
-        JsonArray arr = page.getAsJsonArray();
-        List<Entry<String, Integer>> main = chooseBest(arr.get(0),1);
-        List<Entry<String, Integer>> subMain =chooseBest(arr.get(1),3);
-        List<Entry<String, Integer>> primary = chooseBest(arr.get(2),2);
-        main.addAll(subMain);
-        main.addAll(primary);
-
-        return main;
-    }
-    public List<Entry<String, Integer>> chooseBest(JsonElement perks, int num){
-        Map<String, Integer> map = new HashMap<>();
-        perks.getAsJsonObject().keySet();
-        for (String perk : perks.getAsJsonObject().keySet()){
-            Integer wins = perks.getAsJsonObject().get(perk).getAsJsonArray().get(0).getAsInt();
-            map.put(perk,wins);
-        }
-
-        List<Entry<String, Integer>> sortedPerks = new ArrayList<>(map.entrySet());
-        sortedPerks.sort(Entry.comparingByValue());
-
-        int size = sortedPerks.size();
-        return sortedPerks.subList(size-num, size);
-    }
-    public static class LRunesCell extends HBox {
-        ImageView imageView = new ImageView();
-        Label label = new Label();
-        Button editButton = new Button();
-        Button delButton = new Button();
-        LRunesCell(Image image, String labelText, String pageId) {
-            imageView.setImage(image);
-            label.setText(labelText);
-            label.setMinWidth(275);
-
-            editButton.setText("E");
-            editButton.prefWidth(35.0);
-
-            delButton.setText("X");
-            delButton.onMouseClickedProperty();
-            delButton.prefWidth(35.0);
-
-            imageView.setFitWidth(25);
-            imageView.setFitHeight(25);
-            if(pageId != null)
-                delButton.setOnAction(e -> {
-                    System.out.println("Delete rune page!");
-                    pages.deletePage(pageId);
-                    label.setText("Deleted");
-                });
-            this.getChildren().addAll(imageView, label, editButton, delButton);
-        }
     }
     public static class RunesCell extends HBox {
         ImageView imageView = new ImageView();
