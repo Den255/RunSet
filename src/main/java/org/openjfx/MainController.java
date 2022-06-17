@@ -54,7 +54,7 @@ public class MainController {
             List<Image> images = new ArrayList<>();
             images.add(new Image(String.valueOf(imgLocation)));
             if (rune.get("isDeletable").getAsBoolean())
-                localRunesList.getItems().add(new RunesCell(images, name, page_id));
+                localRunesList.getItems().add(new RunesCell(images, name, page_id,null));
         }
 
     }
@@ -80,7 +80,7 @@ public class MainController {
             for(Entry<String,Integer>perk : main){
                 images.add(new Image(String.valueOf(getClass().getResource(perks.getImageById(perk.getKey())))));
             }
-            runesList.getItems().add(new RunesCell(images, chSelected+":"+positionStr+" Wins: "+main.get(0).getValue()+" ", null));
+            runesList.getItems().add(new RunesCell(images, chSelected+":"+positionStr+" | Wins: "+main.get(0).getValue()+" ", null,main));
         }
         dialogVbox.getChildren().add(runesList);
         Scene dialogScene = new Scene(dialogVbox, 410, 400);
@@ -96,7 +96,7 @@ public class MainController {
         Label label = new Label();
         Button editButton = new Button();
         Button delButton = new Button();
-        RunesCell(List<Image> images, String labelText, String page_id) {
+        RunesCell(List<Image> images, String labelText, String page_id, List<Map.Entry<String, Integer>> perkIds) {
             HBox perks = new HBox();
             for(Image image : images){
                 ImageView perksImages = new ImageView(image);
@@ -119,8 +119,9 @@ public class MainController {
             imageView.setFitHeight(25);
             editButton.setOnAction(e ->{
                 pages.deleteCurrent();
-                String[] perkIds = {"1","2","3","4","5"};
-                pages.setPage("Test",perkIds);
+                String[] splLabel = labelText.split("\\|");
+                System.out.println(splLabel[0]);
+                pages.setPage(splLabel[0], perkIds);
             });
             this.getChildren().addAll(perks, label, editButton, delButton);
         }

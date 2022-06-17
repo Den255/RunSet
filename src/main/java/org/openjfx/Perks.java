@@ -54,4 +54,26 @@ public class Perks {
         int size = sortedPerks.size();
         return sortedPerks.subList(size-num, size);
     }
+    public static String getPerkStyle(String perkId) {
+        String champions;
+        try {
+            champions = Files.readString(Path.of("./runesReforged.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        JsonParser parser = new JsonParser();
+        Object obj = parser.parse(champions);
+        JsonArray arr = (JsonArray) obj;
+        for (JsonElement item : arr) {
+            JsonArray runesArr = item.getAsJsonObject().get("slots").getAsJsonArray();
+            for (JsonElement slot : runesArr) {
+                for (JsonElement rune : slot.getAsJsonObject().get("runes").getAsJsonArray()) {
+                    if (perkId.equals(rune.getAsJsonObject().get("id").getAsString())) {
+                        return item.getAsJsonObject().get("id").getAsString();
+                    }
+                }
+            }
+        }
+        return "8100"; // Domination
+    }
 }

@@ -3,8 +3,8 @@ package org.openjfx;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class RunePages {
     public JsonArray getClientPages() {
@@ -28,16 +28,24 @@ public class RunePages {
     public void deletePage(String pageId) {
         ClientApi.delRequest("/lol-perks/v1/pages/" + pageId);
     }
-    public void setPage(String name, String[] perkIds){
+    public void setPage(String name, List<Map.Entry<String, Integer>> perkIds){
         //Attack   5008 5005 5007 // adaptive force / speed attack / cast speed
         //Universe 5008 5002 5003 // adaptive force / def          / mag resist
         //Defense  5001 5002 5003 // health         / def          / mag resist
+        StringBuilder perkIdsStr = new StringBuilder();
+        for(Map.Entry<String, Integer> perk : perkIds){
+            perkIdsStr.append(perk.getKey()).append(",");
+        }
+
+        String style = Perks.getPerkStyle(perkIds.get(0).getKey()); // get style
+        String subStyle = Perks.getPerkStyle(perkIds.get(4).getKey()); // get style // get sub-style
+
         String defaultMods = "5007,5008,5001";
-        System.out.println(Arrays.toString(perkIds));
+        System.out.println(perkIdsStr);
         String data = "{\"name\":\""+name+"\"," +
-                    "\"primaryStyleId\":8300," +
-                    "\"subStyleId\":8400," +
-                    "\"selectedPerkIds\": ["+String.join(",", perkIds)+","+defaultMods+"]," +
+                    "\"primaryStyleId\":"+style+"," +
+                    "\"subStyleId\":"+subStyle+"," +
+                    "\"selectedPerkIds\": ["+perkIdsStr+defaultMods+"]," +
                     "\"current\":true}";
         ClientApi.postRequest("/lol-perks/v1/pages",data);
     }
