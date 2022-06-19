@@ -7,11 +7,11 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Champion {
-    public ArrayList<String> getNames() throws IOException {
+    public TreeSet<String> getNames() throws IOException {
         String champions = Files.readString(Path.of("./champions.json"));
         JsonParser parser = new JsonParser();
         Object obj = parser.parse(champions);
@@ -20,7 +20,7 @@ public class Champion {
         JsonObject championsData = jsonData.getAsJsonObject();
         Set<String> chNames = championsData.keySet();
 
-        return new ArrayList<>(chNames);
+        return new TreeSet<>(chNames);
     }
     public int getIdByName(String name) throws IOException {
         String champions = Files.readString(Path.of("./champions.json"));

@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.controlsfx.control.textfield.TextFields;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -28,17 +27,10 @@ public class MainController {
     @FXML
     public ListView<RunesCell> localRunesList;
     @FXML
-    public TextField search;
+    public AutoCompleteTextField search;
     public VBox dialogVbox;
     public static Champion champion = new Champion();
     public static RunePages pages = new RunePages();
-    public MainController() {
-        try {
-            championNames = champion.getNames();
-        }catch (IOException e){
-            System.out.println("DDragon data not loaded!");
-        }
-    }
     @FXML
     private void handleButtonAction() {
         System.out.println("You clicked me!");
@@ -74,7 +66,6 @@ public class MainController {
         for (String position : runes) {
             String positionStr = this.getPosition(position);
             List<Entry<String, Integer>> main = Perks.getPerks(worldRunes.get(position));
-            System.out.println(main);
             List<Image> images = new ArrayList<>();
             Perks perks = new Perks();
             for(Entry<String,Integer>perk : main){
@@ -120,13 +111,12 @@ public class MainController {
             editButton.setOnAction(e ->{
                 pages.deleteCurrent();
                 String[] splLabel = labelText.split("\\|");
-                System.out.println(splLabel[0]);
                 pages.setPage(splLabel[0], perkIds);
             });
             this.getChildren().addAll(perks, label, editButton, delButton);
         }
     }
     public void initialize() {
-        TextFields.bindAutoCompletion(search, championNames);
-    }    
+
+    }
 }
