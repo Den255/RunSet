@@ -6,6 +6,4 @@
  - ```mvn clean javafx:run```
 
 * Build
- - ```mvn clean javafx:jlink```
- - ```chmod +x target/runset/bin/launcher```
- - ```./target/runset/bin/launcher```
+ - ```bash build.sh```
