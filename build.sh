@@ -20,6 +20,8 @@ echo "project version: $PROJECT_VERSION"
 echo "app version: $APP_VERSION"
 echo "main JAR file: $MAIN_JAR"
 
+mvn clean install # or mvn package
+
 # ------ SETUP DIRECTORIES AND FILES ----------------------------------------
 # Remove previously generated java runtime and installers. Copy all required
 # jar files into the input/libs folder.
@@ -99,3 +101,6 @@ $JAVA_HOME/bin/jpackage \
 --app-version ${APP_VERSION}
 # --vendor "ACME Inc." \
 # --copyright "Copyright © 2019-21 ACME Inc."
+
+chmod +x target/installer/RunSet/bin/RunSet
+./target/installer/RunSet/bin/RunSet

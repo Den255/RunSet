@@ -13,6 +13,10 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
+        DDragon dDragon = new DDragon();
+        dDragon.checkVersion();
+        new ClientApi().init();
+
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("scene.fxml")));
         
         Scene scene = new Scene(root);
@@ -21,10 +25,6 @@ public class App extends Application {
         stage.setTitle("RunSet");
         stage.setScene(scene);
         stage.show();
-
-        DDragon dDragon = new DDragon();
-        dDragon.checkVersion();
-        new ClientApi().init();
     }
 
     public static void main(String[] args) {
